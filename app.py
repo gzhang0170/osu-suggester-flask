@@ -16,7 +16,6 @@ def similar():
     
     mods = request.args.get("mods", type=int, default=0)
 
-    # TODO: Add mods into similar maps algorithm
     beatmaps = get_similar_maps(beatmap_id, mods, max_maps=50)
 
     if not beatmaps:

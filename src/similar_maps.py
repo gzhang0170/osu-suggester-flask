@@ -23,53 +23,88 @@ def parse_mods(mod_value):
     return [name for bit, name in MODS.items() if mod_value & bit]
 
 """
-
 Takes a beatmap id as input and returns an array of the most similar maps.
 The map must have a leaderboard (ranked, loved, approved)
 """
-# TODO: Add mods into similar maps algorithm
 def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     af = ArrayFuncs()
 
     # Get cached tables and load them into tables
     current_directory = os.getcwd()
-    map_table_filename_nm = os.path.join(current_directory, "src", "tables", "map_table_25_05_01_nm.npy")
-    data_table_filename_nm = os.path.join(current_directory, "src", "tables", "data_table_25_05_01_nm.npy")
+    map_table_filename_nm = os.path.join(current_directory, "src", "tables", "25_05_01", "map_table_nm.npy")
+    data_table_filename_nm = os.path.join(current_directory, "src", "tables", "25_05_01", "data_table_nm.npy")
     map_table_nm = af.load_numpy_array(map_table_filename_nm)
     data_table_nm = af.load_numpy_array(data_table_filename_nm)
 
-    map_table_filename_dt = os.path.join(current_directory, "src", "tables", "map_table_25_05_01_dt.npy")
-    data_table_filename_dt = os.path.join(current_directory, "src", "tables", "data_table_25_05_01_dt.npy")
+    map_table_filename_dt = os.path.join(current_directory, "src", "tables", "25_05_01", "map_table_dt.npy")
+    data_table_filename_dt = os.path.join(current_directory, "src", "tables", "25_05_01", "data_table_dt.npy")
     map_table_dt = af.load_numpy_array(map_table_filename_dt)
     data_table_dt = af.load_numpy_array(data_table_filename_dt)
 
-    map_table_filename_ht = os.path.join(current_directory, "src", "tables", "map_table_25_05_01_ht.npy")
-    data_table_filename_ht = os.path.join(current_directory, "src", "tables", "data_table_25_05_01_ht.npy")
+    map_table_filename_ht = os.path.join(current_directory, "src", "tables", "25_05_01", "map_table_ht.npy")
+    data_table_filename_ht = os.path.join(current_directory, "src", "tables", "25_05_01", "data_table_ht.npy")
     map_table_ht = af.load_numpy_array(map_table_filename_ht)
     data_table_ht = af.load_numpy_array(data_table_filename_ht)
 
-    map_table_filename_hr = os.path.join(current_directory, "src", "tables", "map_table_25_05_01_hr.npy")
-    data_table_filename_hr = os.path.join(current_directory, "src", "tables", "data_table_25_05_01_hr.npy")
+    map_table_filename_hr = os.path.join(current_directory, "src", "tables", "25_05_01", "map_table_hr.npy")
+    data_table_filename_hr = os.path.join(current_directory, "src", "tables", "25_05_01", "data_table_hr.npy")
     map_table_hr = af.load_numpy_array(map_table_filename_hr)
     data_table_hr = af.load_numpy_array(data_table_filename_hr)
 
-    map_table_filename_ez = os.path.join(current_directory, "src", "tables", "map_table_25_05_01_ez.npy")
-    data_table_filename_ez = os.path.join(current_directory, "src", "tables", "data_table_25_05_01_ez.npy")
+    map_table_filename_ez = os.path.join(current_directory, "src", "tables", "25_05_01", "map_table_ez.npy")
+    data_table_filename_ez = os.path.join(current_directory, "src", "tables", "25_05_01", "data_table_ez.npy")
     map_table_ez = af.load_numpy_array(map_table_filename_ez)
     data_table_ez = af.load_numpy_array(data_table_filename_ez)
 
-    map_table_filename_hrdt = os.path.join(current_directory, "src", "tables", "map_table_25_05_01_hrdt.npy")
-    data_table_filename_hrdt = os.path.join(current_directory, "src", "tables", "data_table_25_05_01_hrdt.npy")
+    map_table_filename_hrdt = os.path.join(current_directory, "src", "tables", "25_05_01", "map_table_hrdt.npy")
+    data_table_filename_hrdt = os.path.join(current_directory, "src", "tables", "25_05_01", "data_table_hrdt.npy")
     map_table_hrdt = af.load_numpy_array(map_table_filename_hrdt)
     data_table_hrdt = af.load_numpy_array(data_table_filename_hrdt)
 
-    map_table_filename_ezdt = os.path.join(current_directory, "src", "tables", "map_table_25_05_01_ezdt.npy")
-    data_table_filename_ezdt = os.path.join(current_directory, "src", "tables", "data_table_25_05_01_ezdt.npy")
+    map_table_filename_ezdt = os.path.join(current_directory, "src", "tables", "25_05_01", "map_table_ezdt.npy")
+    data_table_filename_ezdt = os.path.join(current_directory, "src", "tables", "25_05_01", "data_table_ezdt.npy")
     map_table_ezdt = af.load_numpy_array(map_table_filename_ezdt)
     data_table_ezdt = af.load_numpy_array(data_table_filename_ezdt)
 
-    map_table = np.concatenate((map_table_nm, map_table_dt, map_table_ht, map_table_hr, map_table_ez, map_table_hrdt, map_table_ezdt), axis=0)
-    data_table = np.concatenate((data_table_nm, data_table_dt, data_table_ht, data_table_hr, data_table_ez, data_table_hrdt, data_table_ezdt), axis=0)
+    map_table_filename_hrht = os.path.join(current_directory, "src", "tables", "25_05_01", "map_table_hrht.npy")
+    data_table_filename_hrht = os.path.join(current_directory, "src", "tables", "25_05_01", "data_table_hrht.npy")
+    map_table_hrht = af.load_numpy_array(map_table_filename_hrht)
+    data_table_hrht = af.load_numpy_array(data_table_filename_hrht)
+
+    map_table_filename_ezht = os.path.join(current_directory, "src", "tables", "25_05_01", "map_table_ezht.npy")
+    data_table_filename_ezht = os.path.join(current_directory, "src", "tables", "25_05_01", "data_table_ezht.npy")
+    map_table_ezht = af.load_numpy_array(map_table_filename_ezht)
+    data_table_ezht = af.load_numpy_array(data_table_filename_ezht)
+
+    map_table = np.concatenate(
+        (
+            map_table_nm, 
+            map_table_dt, 
+            map_table_ht, 
+            map_table_hr, 
+            map_table_ez, 
+            map_table_hrdt, 
+            map_table_ezdt,
+            map_table_hrht,
+            map_table_ezht
+        ), 
+        axis=0
+    )
+
+    data_table = np.concatenate(
+        (
+            data_table_nm,
+            data_table_dt,
+            data_table_ht,
+            data_table_hr,
+            data_table_ez,
+            data_table_hrdt,
+            data_table_ezdt,
+            data_table_hrht,
+            data_table_ezht
+        ),
+        axis=0
+    )
 
     # Beatmap not found, return None
     if map_table is None or data_table is None:

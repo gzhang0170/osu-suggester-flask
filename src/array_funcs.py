@@ -31,9 +31,6 @@ class ArrayFuncs:
     """
     Builds the map stats table using the database of .osu files.
     NOTE: This function only works locally.
-    TODO: Add mods (currently working on DT, will implement HR, HT, and EZ later)
-            Probably just make table for each mod and then combine them at the end
-            instead of doing it all at once
     """
     def get_num_map_stats(self, mods, max_limit=1000):
         index = 0
