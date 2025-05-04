@@ -53,8 +53,8 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     map_table_dthr = af.load_numpy_array(map_table_filename_dthr)
     data_table_dthr = af.load_numpy_array(data_table_filename_dthr)
 
-    map_table = np.concatenate((map_table_nm, map_table_dt, map_table_hr, data_table_filename_dthr), axis=0)
-    data_table = np.concatenate((data_table_nm, data_table_dt, data_table_hr, data_table_filename_dthr), axis=0)
+    map_table = np.concatenate((map_table_nm, map_table_dt, map_table_hr, map_table_dthr), axis=0)
+    data_table = np.concatenate((data_table_nm, data_table_dt, data_table_hr, data_table_dthr), axis=0)
 
     # Beatmap not found, return None
     if map_table is None or data_table is None:
