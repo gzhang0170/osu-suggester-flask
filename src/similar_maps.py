@@ -58,8 +58,18 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     map_table_ez = af.load_numpy_array(map_table_filename_ez)
     data_table_ez = af.load_numpy_array(data_table_filename_ez)
 
-    map_table = np.concatenate((map_table_nm, map_table_dt, map_table_ht, map_table_hr, map_table_ez), axis=0)
-    data_table = np.concatenate((data_table_nm, data_table_dt, data_table_ht, data_table_hr, data_table_ez), axis=0)
+    map_table_filename_hrdt = os.path.join(current_directory, "src", "tables", "map_table_25_05_01_hrdt.npy")
+    data_table_filename_hrdt = os.path.join(current_directory, "src", "tables", "data_table_25_05_01_hrdt.npy")
+    map_table_hrdt = af.load_numpy_array(map_table_filename_hrdt)
+    data_table_hrdt = af.load_numpy_array(data_table_filename_hrdt)
+
+    map_table_filename_ezdt = os.path.join(current_directory, "src", "tables", "map_table_25_05_01_ezdt.npy")
+    data_table_filename_ezdt = os.path.join(current_directory, "src", "tables", "data_table_25_05_01_ezdt.npy")
+    map_table_ezdt = af.load_numpy_array(map_table_filename_ezdt)
+    data_table_ezdt = af.load_numpy_array(data_table_filename_ezdt)
+
+    map_table = np.concatenate((map_table_nm, map_table_dt, map_table_ht, map_table_hr, map_table_ez, map_table_hrdt, map_table_ezdt), axis=0)
+    data_table = np.concatenate((data_table_nm, data_table_dt, data_table_ht, data_table_hr, data_table_ez, data_table_hrdt, data_table_ezdt), axis=0)
 
     # Beatmap not found, return None
     if map_table is None or data_table is None:
