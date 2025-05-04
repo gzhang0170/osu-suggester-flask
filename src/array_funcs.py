@@ -84,16 +84,16 @@ class ArrayFuncs:
                 map_table[index][0] = beatmap_id
                 map_table[index][1] = diff_attrs.stars
                 # Manual BPM changes
-                if (mod == 64): # DT
+                if (mod == 64 or mod == 16 + 64 or mod == 2 + 64): # DT, HRDT, EZDT
                     map_table[index][2] = map.bpm * 1.5
-                elif (mod == 256): # HT
+                elif (mod == 256 or mod == 16 + 256 or mod == 2 + 256): # HT, HRHT, EZHT
                     map_table[index][2] = map.bpm * 0.75
                 else:
                     map_table[index][2] = map.bpm
                 # Manual CS changes
-                if (mod == 16): # HR
+                if (mod == 16 or mod == 16 + 64 or mod == 16 + 256): # HR, HRDT, HRHT
                     map_table[index][3] = min(map.cs * 1.3, 10)
-                elif (mod == 2): # EZ
+                elif (mod == 2 or mod == 2 + 64 or mod == 2 + 256): # EZ, EZDT, EZHT
                     map_table[index][3] = map.cs * 0.5
                 else:
                     map_table[index][3] = map.cs
