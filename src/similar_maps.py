@@ -119,10 +119,18 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     #       Not sure of a better way to implement this, especially for maps with different time signatures (ex. 1/3)
     orig_bpms = data_table[:, 2]
     factors = np.array([0.25, 0.5, 1.0, 2.0, 4.0])
-    variants = orig_bpms[:, None] * factors[None, :] 
-    best_idx = np.abs(variants - bpm).argmin(axis=1)
-    stdized = variants[np.arange(orig_bpms.size), best_idx] 
-    data_table[:, 2] = stdized 
+
+    stdized = np.empty_like(orig_bpms)
+    min_diff = np.full(orig_bpms.shape, np.inf)
+
+    for f in factors:
+        scaled = orig_bpms * f 
+        diff = np.abs(scaled - bpm) 
+        mask = diff < min_diff
+        stdized[mask] = scaled[mask]
+        min_diff[mask] = diff[mask]
+
+    data_table[:, 2] = stdized
 
     # SR, BPM, CS, AR, Slider factor, Circle/slider ratio, Aim/speed ratio, Speed/objects ratio
     # NOTE: This is based on my personal testing of what "finds" similar maps currently based on these stats.
