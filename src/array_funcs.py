@@ -127,7 +127,7 @@ class ArrayFuncs:
                 data_table[index][3] = map_stats[4] # AR
                 data_table[index][4] = map_stats[9] # Slider factor
                 if map_stats[12] == 0:
-                    data_table[index][5] = 100 # Catch div by 0 just in case there are no sliders or if ratio is too large
+                    data_table[index][5] = 10 # Catch div by 0 just in case there are no sliders or if ratio is too large
                 else:
                     data_table[index][5] = min(100, map_stats[11] / map_stats[12]) # Circle/slider ratio
                 data_table[index][6] = map_stats[7] / map_stats[8] # Aim/speed ratio

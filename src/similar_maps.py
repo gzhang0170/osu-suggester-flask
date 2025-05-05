@@ -154,7 +154,7 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     data_table[:, 3] = ar_scale(data_table[:, 3], exp=1.25)
 
     # TODO: Temporary solution to circle slider ratio maximum, remove for next table build
-    data_table[:, 5] = np.minimum(data_table[:, 5], 100)
+    data_table[:, 5] = np.minimum(data_table[:, 5], 10)
 
     # SR, BPM, CS, AR, Slider factor, Circle/slider ratio, Aim/speed ratio, Speed/objects ratio
     # NOTE: This is based on my personal testing of what "finds" similar maps currently based on these stats.
