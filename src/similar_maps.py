@@ -114,14 +114,15 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     ref_index = np.where((map_table[:, 0] == beatmap_id) & (map_table[:, -1] == mods))[0][0]
     bpm = data_table[ref_index][1]
 
-    # Determine a "normalized" BPM compared to the current map
+    # Determine a "standardized" BPM compared to the current map
     # NOTE: This is only based on halved/doubled BPMS or similar.
     #       Not sure of a better way to implement this, especially for maps with different time signatures (ex. 1/3)
-    for data_stats in data_table:
-        bpms = np.array([data_stats[1] / 4, data_stats[1] / 2, data_stats[1], data_stats[1] * 2, data_stats[1] * 4])
-        i = np.argmin(np.abs(bpms - bpm))
-        stdized_bpm = bpms[i]
-        data_stats[1] = stdized_bpm
+    orig_bpms = data_table[:, 2]
+    factors = np.array([0.25, 0.5, 1.0, 2.0, 4.0])
+    variants = orig_bpms[:, None] * factors[None, :] 
+    best_idx = np.abs(variants - bpm).argmin(axis=1)
+    stdized = variants[np.arange(orig_bpms.size), best_idx] 
+    data_table[:, 2] = stdized 
 
     # SR, BPM, CS, AR, Slider factor, Circle/slider ratio, Aim/speed ratio, Speed/objects ratio
     # NOTE: This is based on my personal testing of what "finds" similar maps currently based on these stats.
