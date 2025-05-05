@@ -22,18 +22,19 @@ def parse_mods(mod_value):
     mod_value = int(mod_value) # Cast to avoid type errors
     return [name for bit, name in MODS.items() if mod_value & bit]
 
-# TODO: Possibly find a better fit for AR and CS scaling
+# TODO: Add these to the data table directly in the build
+# TODO: Possibly find a better fit for all these attributes' scaling
 """
-Scales AR exponentially.
+Scalers for various attributes.
 """
-def ar_scale(ars, exp=1.25):
-    return np.power(exp, ars)
+def exp_scale(x, exp=2):
+    return np.power(exp, x)
 
-"""
-Scales CS exponentially.
-"""
-def cs_scale(cses, exp=1.25):
-    return np.power(exp, cses)
+def log_scale(x, base=2):
+    return np.emath.logn(base, x + 1)
+
+def logistic_scale(x, L=1.0, k=1.0, x0=0.0):
+    return L / (1 + np.exp(-k * (x - x0)))
 
 """
 Takes a beatmap id as input and returns an array of the most similar maps.
@@ -131,6 +132,21 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     ref_index = ref_index[0]
     bpm = data_table[ref_index][1]
 
+    # TODO: Temporary solution to solve outliers, remove for next table build
+    data_table[:, 0] = np.minimum(data_table[:, 0], 12)
+    data_table[:, 1] = np.minimum(data_table[:, 1], 800)
+    data_table[:, 5] = np.minimum(data_table[:, 5], 10)
+    data_table[:, 6] = np.minimum(data_table[:, 6], 2)
+
+    # Scale avarious attributes
+    # TODO: Add these to the data table directly in the build
+    data_table[:, 2] = log_scale(data_table[:, 2], base=1.3)
+    data_table[:, 3] = exp_scale(data_table[:, 3], exp=1.2)
+    data_table[:, 4] = exp_scale(data_table[:, 4], exp=10)
+    data_table[:, 5] = log_scale(data_table[:, 5], base=1.2)
+    data_table[:, 6] = logistic_scale(data_table[:, 6], L=1, k=8, x0=1.2)
+    data_table[:, 7] = logistic_scale(data_table[:, 7], L=1, k=10, x0=0.3)
+
     # Determine a "standardized" BPM compared to the current map
     # NOTE: This is only based on halved/doubled BPMS or similar.
     #       Not sure of a better way to implement this, especially for maps with different time signatures (ex. 1/3)
@@ -148,13 +164,6 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
         min_diff[mask] = diff[mask]
 
     data_table[:, 1] = stdized
-
-    # Scale CS and AR exponentially
-    data_table[:, 2] = cs_scale(data_table[:, 2], exp=1.25)
-    data_table[:, 3] = ar_scale(data_table[:, 3], exp=1.25)
-
-    # TODO: Temporary solution to circle slider ratio maximum, remove for next table build
-    data_table[:, 5] = np.minimum(data_table[:, 5], 10)
 
     # SR, BPM, CS, AR, Slider factor, Circle/slider ratio, Aim/speed ratio, Speed/objects ratio
     # NOTE: This is based on my personal testing of what "finds" similar maps currently based on these stats.
