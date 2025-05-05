@@ -124,7 +124,11 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
         return None
 
     # Get index of the current map in the table
-    ref_index = np.where((map_table[:, 0] == beatmap_id) & (map_table[:, -1] == mods))[0][0]
+    ref_index = np.where((map_table[:, 0] == beatmap_id) & (map_table[:, -1] == mods))[0]
+    if (len(ref_index) == 0):
+        return None
+    
+    ref_index = ref_index[0]
     bpm = data_table[ref_index][1]
 
     # Determine a "standardized" BPM compared to the current map
@@ -149,11 +153,14 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     data_table[:, 2] = cs_scale(data_table[:, 2], exp=1.25)
     data_table[:, 3] = ar_scale(data_table[:, 3], exp=1.25)
 
+    # TODO: Temporary solution to circle slider ratio maximum, remove for next table build
+    data_table[:, 5] = np.minimum(data_table[:, 5], 100)
+
     # SR, BPM, CS, AR, Slider factor, Circle/slider ratio, Aim/speed ratio, Speed/objects ratio
     # NOTE: This is based on my personal testing of what "finds" similar maps currently based on these stats.
     #       Will likely change with playtesting and more feedback.
     weights = [1.2, 1.4, 0.6, 1.1, 0.4, 1, 2.2, 0.8]
-    weights = np.multiply(weights, 0.8)
+    weights = np.multiply(weights, 0.7)
 
     # Standardize the table's statistics with the weights
     stdized_table = af.preprocess_data(data_table, weights)
