@@ -162,18 +162,18 @@ def build_json(beatmaps):
             "version":          bm.version,
             "creator":          bm._beatmapset.creator,
             "mods":             mods_string,
-            "difficulty_rating":beatmaps[bm.id]["difficulty_rating"],
+            "difficulty_rating":np.float64(beatmaps[bm.id]["difficulty_rating"]),
             "total_length":     total_length,
             "hit_length":       hit_length,
-            "cs":               beatmaps[bm.id]["cs"],
-            "drain":            beatmaps[bm.id]["drain"],
-            "accuracy":         beatmaps[bm.id]["accuracy"],
-            "ar":               beatmaps[bm.id]["ar"],
-            "bpm":              beatmaps[bm.id]["bpm"],
+            "cs":               np.float64(beatmaps[bm.id]["cs"]),
+            "drain":            np.float64(beatmaps[bm.id]["drain"]),
+            "accuracy":         np.float64(beatmaps[bm.id]["accuracy"]),
+            "ar":               np.float64(beatmaps[bm.id]["ar"]),
+            "bpm":              np.float64(beatmaps[bm.id]["bpm"]),
             "playcount":        bm.playcount,
             "status":           bm.status.name,
             "ranked_date":      bm._beatmapset.ranked_date,
-            "distance":         beatmaps[bm.id]["distance"]
+            "distance":         np.float64(beatmaps[bm.id]["distance"])
         })
     
     sorted_attibutes = sorted(attributes, key=lambda x: x['distance'], reverse=True)
