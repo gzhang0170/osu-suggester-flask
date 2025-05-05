@@ -22,6 +22,19 @@ def parse_mods(mod_value):
     mod_value = int(mod_value) # Cast to avoid type errors
     return [name for bit, name in MODS.items() if mod_value & bit]
 
+# TODO: Possibly find a better fit for AR and CS scaling
+"""
+Scales AR exponentially.
+"""
+def ar_scale(ars, exp=1.25):
+    return np.power(exp, ars)
+
+"""
+Scales CS exponentially.
+"""
+def cs_scale(cses, exp=1.25):
+    return np.power(exp, cses)
+
 """
 Takes a beatmap id as input and returns an array of the most similar maps.
 The map must have a leaderboard (ranked, loved, approved)
@@ -117,7 +130,7 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     # Determine a "standardized" BPM compared to the current map
     # NOTE: This is only based on halved/doubled BPMS or similar.
     #       Not sure of a better way to implement this, especially for maps with different time signatures (ex. 1/3)
-    orig_bpms = data_table[:, 2]
+    orig_bpms = data_table[:, 1]
     factors = np.array([0.25, 0.5, 1.0, 2.0, 4.0])
 
     stdized = np.empty_like(orig_bpms)
@@ -130,12 +143,17 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
         stdized[mask] = scaled[mask]
         min_diff[mask] = diff[mask]
 
-    data_table[:, 2] = stdized
+    data_table[:, 1] = stdized
+
+    # Scale CS and AR exponentially
+    data_table[:, 2] = cs_scale(data_table[:, 2], exp=1.25)
+    data_table[:, 3] = ar_scale(data_table[:, 3], exp=1.25)
 
     # SR, BPM, CS, AR, Slider factor, Circle/slider ratio, Aim/speed ratio, Speed/objects ratio
     # NOTE: This is based on my personal testing of what "finds" similar maps currently based on these stats.
     #       Will likely change with playtesting and more feedback.
-    weights = [1.4, 1, 0.6, 0.8, 0.4, 1.2, 2, 0.7]
+    weights = [1.2, 1.4, 0.6, 1.1, 0.4, 1, 2.2, 0.8]
+    weights = np.multiply(weights, 0.8)
 
     # Standardize the table's statistics with the weights
     stdized_table = af.preprocess_data(data_table, weights)
