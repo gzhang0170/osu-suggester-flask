@@ -103,7 +103,7 @@ def get_similar_maps(beatmap_id, mods=0, exclude_mods=[], max_maps=10):
     # NOTE: This is based on my personal testing of what "finds" similar maps currently based on these stats.
     #       Will likely change with playtesting and more feedback.
     weights = [1.2, 1.4, 0.6, 1.1, 0.4, 1, 2.2, 0.8]
-    weights = np.multiply(weights, 0.7)
+    weights = np.multiply(weights, 0.5)
 
     # Standardize the table's statistics with the weights
     stdized_table = af.preprocess_data(data_table[:, :8], weights)
