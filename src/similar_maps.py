@@ -144,7 +144,7 @@ def build_json(beatmaps):
     beatmap_ids = [beatmap[0] for beatmap in beatmaps]
     beatmaps_info = api.beatmaps(beatmap_ids)
 
-    attributes = []
+    attributes = {}
     for bm in beatmaps_info:
         attributes[bm.id] = {
             "url":              bm.url,
