@@ -162,7 +162,7 @@ class ArrayFuncs:
 
         # Scale from 100 to 0, 100 is most similar using power-based falloff
         # TODO: scale is an arbitary number for similarity score, can be changed to be steeper or shallower
-        scale = 1.5
+        scale = 1.35
         scaled_distances = np.round(100 * (1 - distances**scale), 2)
         
         return sorted_indices, scaled_distances[sorted_indices]
