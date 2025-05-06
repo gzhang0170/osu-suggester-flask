@@ -174,7 +174,7 @@ def build_json(beatmaps):
         hit_length = round(attributes[id]["hit_length"] * length_mult)
         mods_string = ','.join(mods_list)
 
-        attributes.append({
+        beatmap_info.append({
             "id":               id,
             "url":              attributes[id]["url"],
             "card":             attributes[id]["card"],
