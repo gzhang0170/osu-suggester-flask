@@ -51,6 +51,10 @@ def get_similar_maps(beatmap_id, mods=0, exclude_mods=[], max_maps=10):
     # Beatmap not found, return None
     if data_table is None:
         return None
+    
+    # Keep original values for some scaled stats
+    # TODO: Remove this after adding other scaling operations to preprocess_data function
+    data_table_stats = data_table[:, :4].copy()
 
     # Get index of the current map in the table
     ref_index = np.where((data_table[:, 8] == beatmap_id) & (data_table[:, 9] == mods))[0]
@@ -60,14 +64,15 @@ def get_similar_maps(beatmap_id, mods=0, exclude_mods=[], max_maps=10):
     ref_index = ref_index[0]
     bpm = data_table[ref_index][1]
 
-    # TODO: Temporary solution to solve outliers, remove for next table build
+    # Add maximums to prevent outliers
+    # TODO: Perform this operation in preprocess_data function
     data_table[:, 0] = np.minimum(data_table[:, 0], 12)
     data_table[:, 1] = np.minimum(data_table[:, 1], 800)
     data_table[:, 5] = np.minimum(data_table[:, 5], 10)
     data_table[:, 6] = np.minimum(data_table[:, 6], 2)
 
     # Scale avarious attributes
-    # TODO: Add these to the data table directly in the build
+    # TODO: Perform this operation in preprocess_data function
     data_table[:, 2] = log_scale(data_table[:, 2], base=1.3)
     data_table[:, 3] = exp_scale(data_table[:, 3], exp=1.2)
     data_table[:, 4] = exp_scale(data_table[:, 4], exp=10)
@@ -78,6 +83,7 @@ def get_similar_maps(beatmap_id, mods=0, exclude_mods=[], max_maps=10):
     # Determine a "standardized" BPM compared to the current map
     # NOTE: This is only based on halved/doubled BPMS or similar.
     #       Not sure of a better way to implement this, especially for maps with different time signatures (ex. 1/3)
+    # TODO: Perform this operation in preprocess_data function
     orig_bpms = data_table[:, 1]
     factors = np.array([0.25, 0.5, 1.0, 2.0, 4.0])
 
@@ -116,12 +122,12 @@ def get_similar_maps(beatmap_id, mods=0, exclude_mods=[], max_maps=10):
         id = data_table[index][8]
         mods = data_table[index][9]
         beatmaps[(id, mods)] =  {   
-            "difficulty_rating": data_table[index][0],
-            "bpm": data_table[index][1],
-            "cs": data_table[index][2],
+            "difficulty_rating": data_table_stats[index][0],
+            "bpm": data_table_stats[index][1],
+            "cs": data_table_stats[index][2],
             "drain": data_table[index][11],
             "accuracy": data_table[index][10],
-            "ar": data_table[index][3],
+            "ar": data_table_stats[index][3],
             "distance": distances[i]
         }
         i += 1
