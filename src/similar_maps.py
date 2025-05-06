@@ -175,7 +175,7 @@ def build_json(beatmaps):
         mods_string = ','.join(mods_list)
 
         beatmap_info.append({
-            "id":               id,
+            "id":               np.float64(id),
             "url":              attributes[id]["url"],
             "card":             attributes[id]["card"],
             "artist":           attributes[id]["artist"],
