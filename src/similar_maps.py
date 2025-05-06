@@ -168,6 +168,9 @@ def build_json(beatmaps):
 
     beatmap_info = []
     for (id, mods), attrs in beatmaps.items():
+        if id not in attributes:
+            continue
+
         mods_list = parse_mods(mods)
         if "DT" in mods_list:
             length_mult = 0.667
