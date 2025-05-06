@@ -12,11 +12,14 @@ def hello_world():
 def similar():
     beatmap_id = request.args.get("beatmap_id", type=int)
     if not beatmap_id:
-        abort(400, "beatmap_id query-param required, e.g. /similar?beatmap_id=2233275&mods=0")
+        abort(400, "beatmap_id query-param required, e.g. /similar?beatmap_id=2233275&mods=0&exclude=2,64")
     
     mods = request.args.get("mods", type=int, default=0)
 
-    beatmaps = get_similar_maps(beatmap_id, mods, max_maps=50)
+    exclude_raw = request.args.get("exclude", "")
+    exclude_mods = [int(x) for x in exclude_raw.split(",") if x]
+
+    beatmaps = get_similar_maps(beatmap_id, mods, exclude_mods, max_maps=50)
 
     if not beatmaps:
         return jsonify({"similar": beatmaps})

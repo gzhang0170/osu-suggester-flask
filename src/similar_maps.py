@@ -40,7 +40,7 @@ def logistic_scale(x, L=1.0, k=1.0, x0=0.0):
 Takes a beatmap id as input and returns an array of the most similar maps.
 The map must have a leaderboard (ranked, loved, approved)
 """
-def get_similar_maps(beatmap_id, mods=0, max_maps=10):
+def get_similar_maps(beatmap_id, mods=0, exclude_mods=[], max_maps=10):
     af = ArrayFuncs()
 
     # Get cached tables and load them into tables
@@ -107,21 +107,26 @@ def get_similar_maps(beatmap_id, mods=0, max_maps=10):
     
     # Build a dictionary of the most similar beatmap ids
     beatmaps = {}
+    max_maps_i = 0
     i = 0
     for index in similar_indices:
+        if data_table[index][9] in exclude_mods:
+            i += 1
+            continue
         id = data_table[index][8]
-        beatmaps[id] =  {   
+        mods = data_table[index][9]
+        beatmaps[(id, mods)] =  {   
             "difficulty_rating": data_table[index][0],
             "bpm": data_table[index][1],
             "cs": data_table[index][2],
             "drain": data_table[index][11],
             "accuracy": data_table[index][10],
             "ar": data_table[index][3],
-            "mods": data_table[index][9],
             "distance": distances[i]
         }
         i += 1
-        if i >= max_maps:
+        max_maps_i += 1
+        if max_maps_i >= max_maps:
             break
     
     return beatmaps
@@ -136,46 +141,62 @@ def build_json(beatmaps):
     client_secret = os.environ["CLIENT_SECRET"]
     api = Ossapi(client_id, client_secret)
 
-    beatmap_ids = list(beatmaps.keys())
+    beatmap_ids = [beatmap[0] for beatmap in beatmaps]
     beatmaps_info = api.beatmaps(beatmap_ids)
 
     attributes = []
     for bm in beatmaps_info:
-        mods = parse_mods(beatmaps[bm.id]["mods"])
-        if "DT" in mods:
-            length_mult = 1.5
-        elif "HT" in mods:
-            length_mult = 0.75
-        else:
-            length_mult = 1
-
-        total_length = round(bm.total_length / length_mult)
-        hit_length = round(bm.hit_length / length_mult)
-        mods_string = ','.join(mods)
-
-        attributes.append({
-            "id":               bm.id,
+        attributes[bm.id] = {
             "url":              bm.url,
             "card":             bm._beatmapset.covers.card,
             "artist":           bm._beatmapset.artist,
             "title":            bm._beatmapset.title,
             "version":          bm.version,
             "creator":          bm._beatmapset.creator,
-            "mods":             mods_string,
-            "difficulty_rating":np.float64(beatmaps[bm.id]["difficulty_rating"]),
-            "total_length":     total_length,
-            "hit_length":       hit_length,
-            "cs":               np.float64(beatmaps[bm.id]["cs"]),
-            "drain":            np.float64(beatmaps[bm.id]["drain"]),
-            "accuracy":         np.float64(beatmaps[bm.id]["accuracy"]),
-            "ar":               np.float64(beatmaps[bm.id]["ar"]),
-            "bpm":              np.float64(beatmaps[bm.id]["bpm"]),
+            "total_length":     bm.total_length,
+            "hit_length":       bm.hit_length,
             "playcount":        bm.playcount,
             "status":           bm.status.name,
             "ranked_date":      bm._beatmapset.ranked_date,
-            "distance":         np.float64(beatmaps[bm.id]["distance"])
+        }
+
+    beatmap_info = []
+    for (id, mods), attrs in beatmaps.tems():
+        mods_list = parse_mods(mods)
+        if "DT" in mods_list:
+            length_mult = 0.667
+        elif "HT" in mods_list:
+            length_mult = 1.333
+        else:
+            length_mult = 1
+        
+        total_length = round(attributes[id]["total_length"] * length_mult)
+        hit_length = round(attributes[id]["hit_length"] * length_mult)
+        mods_string = ','.join(mods_list)
+
+        attributes.append({
+            "id":               id,
+            "url":              attributes[id]["url"],
+            "card":             attributes[id]["card"],
+            "artist":           attributes[id]["artist"],
+            "title":            attributes[id]["title"],
+            "version":          attributes[id]["version"],
+            "creator":          attributes[id]["creator"],
+            "mods":             mods_string,
+            "difficulty_rating":np.float64(attrs["difficulty_rating"]),
+            "total_length":     total_length,
+            "hit_length":       hit_length,
+            "cs":               np.float64(attrs["cs"]),
+            "drain":            np.float64(attrs["drain"]),
+            "accuracy":         np.float64(attrs["accuracy"]),
+            "ar":               np.float64(attrs["ar"]),
+            "bpm":              np.float64(attrs["bpm"]),
+            "playcount":        attributes[id]["playcount"],
+            "status":           attributes[id]["status"],
+            "ranked_date":      attributes[id]["ranked_date"],
+            "distance":         np.float64(attrs["distance"])
         })
     
-    sorted_attibutes = sorted(attributes, key=lambda x: x['distance'], reverse=True)
-    return sorted_attibutes
+    sorted_beatmap_info = sorted(beatmap_info, key=lambda x: x["distance"], reverse=True)
+    return sorted_beatmap_info
 

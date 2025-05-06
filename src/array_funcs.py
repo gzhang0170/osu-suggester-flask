@@ -150,7 +150,7 @@ class ArrayFuncs:
     """
     Finds the top N most similar maps using Euclidean distance.
     """
-    def find_most_similar(self, data_table, ref_index, top_n=100000):
+    def find_most_similar(self, data_table, ref_index):
         # Extract reference object
         ref_map = [data_table[ref_index]]
 
@@ -158,7 +158,7 @@ class ArrayFuncs:
         distances = euclidean_distances(data_table, ref_map).flatten()
 
         # Get closest indices (excluding itself)
-        sorted_indices = np.argsort(distances)[1:top_n+1]
+        sorted_indices = np.argsort(distances)[1:]
 
         # Scale from 100 to 0, 100 is most similar using power-based falloff
         # TODO: scale is an arbitary number for similarity score, can be changed to be steeper or shallower
